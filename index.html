@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Internet Speed Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            color: white;
+            padding: 20px;
+        }
+
+        /* Title */
+        .title {
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .title i {
+            font-size: 1.6em;
+            background: linear-gradient(45deg, #00e6e6, #7d5fff, #ff4ecd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            animation: sparkle 6s infinite;
+        }
+
+        @keyframes sparkle {
+
+            0%,
+            95%,
+            100% {
+                text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                text-shadow: 0 0 18px rgba(255, 255, 255, 0.9),
+                    0 0 30px rgba(0, 230, 230, 0.6);
+                transform: rotate(5deg) scale(1.2);
+            }
+        }
+
+        /* Container */
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        .left-panel,
+        .right-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 300;
+            text-align: center;
+            color: aliceblue;
+        }
+
+        /* Speed display */
+        .speed-display {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+
+        .speed-item {
+            text-align: center;
+        }
+
+        .speed-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .speed-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.good {
+            background: rgba(0, 200, 100, 0.2);
+            color: #00ff95;
+        }
+
+        .badge.average {
+            background: rgba(255, 200, 0, 0.2);
+            color: #ffd700;
+        }
+
+        .badge.poor {
+            background: rgba(255, 80, 80, 0.2);
+            color: #ff6b6b;
+        }
+
+        /* Button */
+        .test-button {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4aa, #00d4ff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            margin: 10px 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            min-height: 20px;
+            text-align: center;
+        }
+
+        .ping-display {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        /* Right panel */
+        .right-panel h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .signal-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .signal-item i {
+            font-size: 1.5rem;
+            width: 30px;
+        }
+
+        .bars {
+            display: flex;
+            gap: 4px;
+            height: 20px;
+            align-items: flex-end;
+            flex: 1;
+        }
+
+        .bar {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            height: 0%;
+            transition: height 0.5s ease, background 0.5s ease;
+        }
+
+        /* WhatsApp */
+        .whatsapp {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .whatsapp a {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #25D366;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .whatsapp a:hover {
+            background: #1ebe5d;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 class="title">
+        <i class="fa fa-diamond" aria-hidden="true"></i>
+        DIAMOND EFOOTBALL NETWORK SPEED TEST
+    </h2>
+
+    <div class="main-container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <h1>Speed Test</h1>
+
+            <div class="speed-display">
+                <div class="speed-item">
+                    <div class="speed-label">Download</div>
+                    <div class="speed-value" id="downloadSpeed">--</div>
+                    <div class="speed-unit">Mbps</div>
+                    <div id="downloadBadge"></div>
+                </div>
+                <div class="speed-item">
+                    <div class="speed-label">Upload</div>
+                    <div class="speed-value" id="uploadSpeed">--</div>
+                    <div class="speed-unit">Mbps</div>
+                    <div id="uploadBadge"></div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="status" id="status">Click "Start Test" to begin</div>
+            <button class="test-button" id="startTest" onclick="runSpeedTest()">Start Test</button>
+            <div class="ping-display" id="pingDisplay"></div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <h2>Signal Strength</h2>
+
+            <div class="signal-item"><i class="fas fa-gamepad"></i>
+                <div class="bars" id="gamingBars"></div>
+            </div>
+            <div class="signal-item"><i class="fas fa-tv"></i>
+                <div class="bars" id="streamingBars"></div>
+            </div>
+            <div class="signal-item"><i class="fas fa-video"></i>
+                <div class="bars" id="callsBars"></div>
+            </div>
+            <div class="signal-item"><i class="fas fa-globe"></i>
+                <div class="bars" id="browsingBars"></div>
+            </div>
+
+            <div class="whatsapp">
+                <p>Join our WhatsApp group for competitive tournaments!</p>
+                <a href="https://chat.whatsapp.com/Bs75urxsdCBDGnhpF7fOn9" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Join Group
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isTestRunning = false;
+
+        const updateProgress = (pct) => {
+            document.getElementById('progressFill').style.width = pct + '%';
+        };
+
+        const updateStatus = (msg) => {
+            document.getElementById('status').textContent = msg;
+        };
+
+        const setBadge = (value, type) => {
+            let badgeClass = 'poor';
+            let label = 'Poor';
+
+            if (type === 'download') {
+                if (value >= 50) { badgeClass = 'good'; label = 'Good'; }
+                else if (value >= 20) { badgeClass = 'average'; label = 'Average'; }
+            }
+
+            if (type === 'upload') {
+                if (value >= 10) { badgeClass = 'good'; label = 'Good'; }
+                else if (value >= 3) { badgeClass = 'average'; label = 'Average'; }
+            }
+
+            document.getElementById(type + 'Badge').innerHTML =
+                `<span class="badge ${badgeClass}">${label}</span>`;
+        };
+
+        const createBars = (containerId, strength) => {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                container.appendChild(bar);
+                setTimeout(() => {
+                    bar.style.height = (i * 20) + '%';
+                    if (i <= strength) {
+                        bar.style.background = '#00ff95';
+                    }
+                }, i * 200);
+            }
+        };
+
+        const updateSignalStrength = (download, upload, ping) => {
+            const gaming = ping < 40 ? 5 : ping < 80 ? 3 : 1;
+            const streaming = download > 50 ? 5 : download > 20 ? 3 : 1;
+            const calls = upload > 10 ? 5 : upload > 3 ? 3 : 1;
+            const browsing = (download + upload) / 2 > 30 ? 5 : 3;
+
+            createBars('gamingBars', gaming);
+            createBars('streamingBars', streaming);
+            createBars('callsBars', calls);
+            createBars('browsingBars', browsing);
+        };
+
+        async function testPing() {
+            const start = performance.now();
+            try {
+                await fetch('https://speed.cloudflare.com/__down?bytes=1000', { cache: 'no-cache' });
+                const end = performance.now();
+                return Math.round(end - start);
+            } catch {
+                return null;
+            }
+        }
+
+        async function testDownloadSpeed() {
+            updateStatus('Testing download speed...');
+            updateProgress(25);
+
+            const sizes = [1e6, 1e7];
+            let total = 0, ok = 0;
+
+            for (let i = 0; i < sizes.length; i++) {
+                try {
+                    const start = performance.now();
+                    const res = await fetch(`https://speed.cloudflare.com/__down?bytes=${sizes[i]}`, { cache: 'no-cache' });
+                    await res.blob();
+                    const end = performance.now();
+                    const duration = (end - start) / 1000;
+                    const speed = (sizes[i] * 8 / duration) / 1e6;
+                    total += speed; ok++;
+                    updateProgress(25 + (i + 1) * 20);
+                } catch { }
+            }
+
+            if (ok) return total / ok;
+            throw new Error('Download test failed');
+        }
+
+        async function testUploadSpeed() {
+            updateStatus('Testing upload speed...');
+            updateProgress(70);
+
+            const totalSize = 1e6;
+            const chunkSize = 65536;
+            const data = new Uint8Array(totalSize);
+            for (let offset = 0; offset < totalSize; offset += chunkSize) {
+                const len = Math.min(chunkSize, totalSize - offset);
+                const temp = new Uint8Array(len);
+                crypto.getRandomValues(temp);
+                data.set(temp, offset);
+            }
+
+            const start = performance.now();
+            const res = await fetch('https://speed.cloudflare.com/__up', { method: 'POST', body: data });
+            const end = performance.now();
+            const duration = (end - start) / 1000;
+            return (data.length * 8 / duration) / 1e6;
+        }
+
+        async function runSpeedTest() {
+            if (isTestRunning) return;
+            isTestRunning = true;
+            const btn = document.getElementById('startTest');
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+
+            try {
+                updateStatus('Testing ping...');
+                const ping = await testPing();
+                document.getElementById('pingDisplay').textContent = ping ? `Ping: ${ping}ms` : 'Ping: Error';
+                updateProgress(10);
+
+                const download = await testDownloadSpeed();
+                document.getElementById('downloadSpeed').textContent = download.toFixed(1);
+                setBadge(download, 'download');
+
+                const upload = await testUploadSpeed();
+                document.getElementById('uploadSpeed').textContent = upload.toFixed(1);
+                setBadge(upload, 'upload');
+
+                updateSignalStrength(download, upload, ping);
+                updateProgress(100);
+                updateStatus('Test completed!');
+            } catch (err) {
+                updateStatus('Test failed. Please try again.');
+            } finally {
+                isTestRunning = false;
+                btn.disabled = false;
+                btn.textContent = 'Start Test';
+            }
+        }
+    </script>
+</body>
+
+</html>
